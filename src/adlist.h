@@ -33,34 +33,53 @@
 
 /* Node, List, and Iterator are the only data structures used currently. */
 
+/*
+ * 双端链表节点
+ */
 typedef struct listNode {
     struct listNode *prev;
     struct listNode *next;
     void *value;
 } listNode;
 
+/*
+ * 双端链表迭代器
+ */
 typedef struct listIter {
     listNode *next;
     int direction;
 } listIter;
 
+/*
+ * 双端链表结构
+ */
 typedef struct list {
+    // 表头节点
     listNode *head;
+    // 表尾节点
     listNode *tail;
+    // 节点值复制
     void *(*dup)(void *ptr);
+    // 节点值释放
     void (*free)(void *ptr);
+    // 节点值比较函数
     int (*match)(void *ptr, void *key);
     unsigned long len;
 } list;
 
 /* Functions implemented as macros */
+// 返回链表节点包含的数量
+// T = O(1)
 #define listLength(l) ((l)->len)
+
 #define listFirst(l) ((l)->head)
 #define listLast(l) ((l)->tail)
 #define listPrevNode(n) ((n)->prev)
 #define listNextNode(n) ((n)->next)
 #define listNodeValue(n) ((n)->value)
 
+// 将链表l的复制函数的值设置为m
+// T = O(1)
 #define listSetDupMethod(l,m) ((l)->dup = (m))
 #define listSetFreeMethod(l,m) ((l)->free = (m))
 #define listSetMatchMethod(l,m) ((l)->match = (m))
@@ -89,7 +108,9 @@ void listRotate(list *list);
 void listJoin(list *l, list *o);
 
 /* Directions for iterators */
+// 从表头向表尾进行迭代
 #define AL_START_HEAD 0
+// 从表尾向表头进行迭代
 #define AL_START_TAIL 1
 
 #endif /* __ADLIST_H__ */

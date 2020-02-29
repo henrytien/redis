@@ -60,14 +60,20 @@
     #endif
 #endif
 
+/*
+ * 创建事件循环
+ */
 aeEventLoop *aeCreateEventLoop(int setsize) {
     aeEventLoop *eventLoop;
     int i;
-
+    // 事件分配内存
     if ((eventLoop = zmalloc(sizeof(*eventLoop))) == NULL) goto err;
+    // 初始化文件事件结构和已经就绪的结构数组
     eventLoop->events = zmalloc(sizeof(aeFileEvent)*setsize);
     eventLoop->fired = zmalloc(sizeof(aeFiredEvent)*setsize);
     if (eventLoop->events == NULL || eventLoop->fired == NULL) goto err;
+    
+    // 设置数组大小
     eventLoop->setsize = setsize;
     eventLoop->lastTime = time(NULL);
     eventLoop->timeEventHead = NULL;
@@ -80,8 +86,11 @@ aeEventLoop *aeCreateEventLoop(int setsize) {
     if (aeApiCreate(eventLoop) == -1) goto err;
     /* Events with mask == AE_NONE are not set. So let's initialize the
      * vector with it. */
+    // 初始化监听事件
     for (i = 0; i < setsize; i++)
         eventLoop->events[i].mask = AE_NONE;
+
+    // 返回创建的事件循环
     return eventLoop;
 
 err:
@@ -99,6 +108,7 @@ int aeGetSetSize(aeEventLoop *eventLoop) {
 }
 
 /* Tells the next iteration/s of the event processing to set timeout of 0. */
+// 设置下一个事件状态是否超时
 void aeSetDontWait(aeEventLoop *eventLoop, int noWait) {
     if (noWait)
         eventLoop->flags |= AE_DONT_WAIT;
@@ -113,6 +123,8 @@ void aeSetDontWait(aeEventLoop *eventLoop, int noWait) {
  * performed at all.
  *
  * Otherwise AE_OK is returned and the operation is successful. */
+
+// 调整事件大小
 int aeResizeSetSize(aeEventLoop *eventLoop, int setsize) {
     int i;
 
@@ -126,22 +138,29 @@ int aeResizeSetSize(aeEventLoop *eventLoop, int setsize) {
 
     /* Make sure that if we created new slots, they are initialized with
      * an AE_NONE mask. */
+    // 确保创建了新的位置
     for (i = eventLoop->maxfd+1; i < setsize; i++)
         eventLoop->events[i].mask = AE_NONE;
     return AE_OK;
 }
-
+// 删除事件，对应进行free
 void aeDeleteEventLoop(aeEventLoop *eventLoop) {
     aeApiFree(eventLoop);
     zfree(eventLoop->events);
     zfree(eventLoop->fired);
     zfree(eventLoop);
 }
-
+/*
+ * 停止事件处理
+ */
 void aeStop(aeEventLoop *eventLoop) {
     eventLoop->stop = 1;
 }
 
+/*
+ * mask 的参数值，fd 文件描述符
+ * 当fd 可用时，执行proc函数
+ */
 int aeCreateFileEvent(aeEventLoop *eventLoop, int fd, int mask,
         aeFileProc *proc, void *clientData)
 {
@@ -149,19 +168,25 @@ int aeCreateFileEvent(aeEventLoop *eventLoop, int fd, int mask,
         errno = ERANGE;
         return AE_ERR;
     }
+    // 取出文件事件
     aeFileEvent *fe = &eventLoop->events[fd];
-
+    // 监听指定fd的指定事件
     if (aeApiAddEvent(eventLoop, fd, mask) == -1)
         return AE_ERR;
+    // 设置文件事件类型
     fe->mask |= mask;
     if (mask & AE_READABLE) fe->rfileProc = proc;
     if (mask & AE_WRITABLE) fe->wfileProc = proc;
+    // 私有数据
     fe->clientData = clientData;
+    // 更新事件的
     if (fd > eventLoop->maxfd)
         eventLoop->maxfd = fd;
     return AE_OK;
 }
-
+/*
+ * 将fd 从指定的mask中删除
+ */
 void aeDeleteFileEvent(aeEventLoop *eventLoop, int fd, int mask)
 {
     if (fd >= eventLoop->setsize) return;

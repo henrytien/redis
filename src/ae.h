@@ -34,26 +34,36 @@
 #define __AE_H__
 
 #include <time.h>
-
+// 事件执行状态
 #define AE_OK 0
 #define AE_ERR -1
 
+// 文件事件状态
 #define AE_NONE 0       /* No events registered. */
+// 可读
 #define AE_READABLE 1   /* Fire when descriptor is readable. */
+// 可写
 #define AE_WRITABLE 2   /* Fire when descriptor is writable. */
+
 #define AE_BARRIER 4    /* With WRITABLE, never fire the event if the
                            READABLE event already fired in the same event
                            loop iteration. Useful when you want to persist
                            things to disk before sending replies, and want
                            to do that in a group fashion. */
 
+// 文件事件
 #define AE_FILE_EVENTS 1
+// 时间事件
 #define AE_TIME_EVENTS 2
+// 所有事件
 #define AE_ALL_EVENTS (AE_FILE_EVENTS|AE_TIME_EVENTS)
+// 不阻塞也不进行等待
 #define AE_DONT_WAIT 4
+// sleep后的调用事件
 #define AE_CALL_AFTER_SLEEP 8
-
+// 是否要持续执行
 #define AE_NOMORE -1
+// 删除事件ID
 #define AE_DELETED_EVENT_ID -1
 
 /* Macros */
@@ -71,40 +81,62 @@ typedef void aeBeforeSleepProc(struct aeEventLoop *eventLoop);
 typedef struct aeFileEvent {
     int mask; /* one of AE_(READABLE|WRITABLE|BARRIER) */
     aeFileProc *rfileProc;
+    // 写事件
     aeFileProc *wfileProc;
     void *clientData;
 } aeFileEvent;
 
 /* Time event structure */
+// 时间事件
 typedef struct aeTimeEvent {
+    // 时间事件ID
     long long id; /* time event identifier. */
+    // 事件到达时间
     long when_sec; /* seconds */
     long when_ms; /* milliseconds */
+    // 时间事件处理函数
     aeTimeProc *timeProc;
+    // 事件释放函数
     aeEventFinalizerProc *finalizerProc;
+
     void *clientData;
+    // 前一个时间事件
     struct aeTimeEvent *prev;
     struct aeTimeEvent *next;
 } aeTimeEvent;
 
 /* A fired event */
 typedef struct aeFiredEvent {
-    int fd;
-    int mask;
+    int fd;   // 已经就绪的文件描述符
+    int mask;   //事件类型掩码
 } aeFiredEvent;
 
 /* State of an event based program */
 typedef struct aeEventLoop {
+    // 目前已经注册的文件描述符
     int maxfd;   /* highest file descriptor currently registered */
+    // 目前已经追踪的最大文件描述符
     int setsize; /* max number of file descriptors tracked */
+    // 生成时间事件的ID
     long long timeEventNextId;
+    // 最后一次执行事件的时间
     time_t lastTime;     /* Used to detect system clock skew */
+    // 已经注册的文件事件
     aeFileEvent *events; /* Registered events */
+
+    // 已经就绪的文件事件
     aeFiredEvent *fired; /* Fired events */
+    // 时间事件
     aeTimeEvent *timeEventHead;
+
+    // 事件处理器的开关
     int stop;
     void *apidata; /* This is used for polling API specific data */
+
+    // 事件处理前要执行的事件
     aeBeforeSleepProc *beforesleep;
+
+    // 事件处理后要执行的事件
     aeBeforeSleepProc *aftersleep;
     int flags;
 } aeEventLoop;

@@ -279,6 +279,7 @@ listNode *listNext(listIter *iter)
         if (iter->direction == AL_START_HEAD)
             iter->next = current->next;
         else
+            // 保存下一个节点，防止当前节点被删除而造成指针丢失
             iter->next = current->prev;
     }
     return current;
@@ -297,16 +298,17 @@ list *listDup(list *orig)
     list *copy;
     listIter iter;
     listNode *node;
-
+    // 创建新的链表
     if ((copy = listCreate()) == NULL)
         return NULL;
     copy->dup = orig->dup;
     copy->free = orig->free;
     copy->match = orig->match;
     listRewind(orig, &iter);
+    // 迭代整个输入链表
     while((node = listNext(&iter)) != NULL) {
         void *value;
-
+        // 复制节点值到新节点
         if (copy->dup) {
             value = copy->dup(node->value);
             if (value == NULL) {
@@ -315,6 +317,7 @@ list *listDup(list *orig)
             }
         } else
             value = node->value;
+        // 将节点添加到链表
         if (listAddNodeTail(copy, value) == NULL) {
             listRelease(copy);
             return NULL;
@@ -359,12 +362,13 @@ listNode *listSearchKey(list *list, void *key)
  * and so on. If the index is out of range NULL is returned. */
 listNode *listIndex(list *list, long index) {
     listNode *n;
-
+    // 如果索引为负数，从表尾开始查找
     if (index < 0) {
         index = (-index)-1;
         n = list->tail;
         while(index-- && n) n = n->prev;
     } else {
+        // 如果索引为正数，从表头开始查找
         n = list->head;
         while(index-- && n) n = n->next;
     }
@@ -374,13 +378,14 @@ listNode *listIndex(list *list, long index) {
 /* Rotate the list removing the tail node and inserting it to the head. */
 void listRotate(list *list) {
     listNode *tail = list->tail;
-
+   
     if (listLength(list) <= 1) return;
 
     /* Detach current tail */
     list->tail = tail->prev;
     list->tail->next = NULL;
     /* Move it as head */
+    // 插入表头
     list->head->prev = tail;
     tail->prev = NULL;
     tail->next = list->head;
@@ -389,6 +394,9 @@ void listRotate(list *list) {
 
 /* Add all the elements of the list 'o' at the end of the
  * list 'l'. The list 'other' remains empty but otherwise valid. */
+/*
+ * 将链表o 插入链表l,并把o置空
+ */
 void listJoin(list *l, list *o) {
     if (o->head)
         o->head->prev = l->tail;

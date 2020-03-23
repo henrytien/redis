@@ -1,0 +1,7 @@
+{
+    "restructuredtext.confPath": "",
+    "files.associations": {
+        "algorithm": "cpp",
+        "iterator": "cpp"
+    }
+}

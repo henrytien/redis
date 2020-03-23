@@ -208,7 +208,9 @@ void aeDeleteFileEvent(aeEventLoop *eventLoop, int fd, int mask)
         eventLoop->maxfd = j;
     }
 }
-
+/*
+ * 获取给定 fd 正在监听的事件类型
+ */
 int aeGetFileEvents(aeEventLoop *eventLoop, int fd) {
     if (fd >= eventLoop->setsize) return 0;
     aeFileEvent *fe = &eventLoop->events[fd];

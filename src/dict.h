@@ -76,6 +76,7 @@ typedef struct dictht {
 typedef struct dict {
     dictType *type;
     void *privdata;
+    // hashtable first use ht[0]，when rehash use ht[1]
     dictht ht[2];
     long rehashidx; /* rehashing not in progress if rehashidx == -1 */
     unsigned long iterators; /* number of iterators currently running */

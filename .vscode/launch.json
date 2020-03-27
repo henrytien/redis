@@ -9,7 +9,7 @@
             "request": "launch",
             "name": "Debug",
             "program": "./src/redis-server",
-            "args": [],
+            "args": "./redis.conf",
             "cwd": "${workspaceFolder}"
         }
     ]

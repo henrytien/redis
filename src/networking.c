@@ -243,6 +243,7 @@ int prepareClientToWrite(client *c) {
 int _addReplyToBuffer(client *c, const char *s, size_t len) {
     size_t available = sizeof(c->buf)-c->bufpos;
 
+    serverLog(LL_DEBUG,"henry love mj _addReplyToBuffer available %d.", available/1024);
     if (c->flags & CLIENT_CLOSE_AFTER_REPLY) return C_OK;
 
     /* If there already are entries in the reply list, we cannot

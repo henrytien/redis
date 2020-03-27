@@ -329,6 +329,7 @@ typedef long long ustime_t; /* microsecond time type. */
 #define LL_VERBOSE 1
 #define LL_NOTICE 2
 #define LL_WARNING 3
+#define LL_HENRYLOG 4
 #define LL_RAW (1<<10) /* Modifier to log without timestamp */
 
 /* Supervision options */

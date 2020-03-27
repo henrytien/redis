@@ -1849,7 +1849,7 @@ user *ACLCreateUnlinkedUser();
 void ACLFreeUserAndKillClients(user *u);
 void addACLLogEntry(client *c, int reason, int keypos, sds username);
 
-/* Sorted sets data type */
+/* Sorted sets data type henrysort */
 
 /* Input flags. */
 #define ZADD_NONE 0
@@ -1913,7 +1913,7 @@ int zzlLexValueLteMax(unsigned char *p, zlexrangespec *spec);
 int zslLexValueGteMin(sds value, zlexrangespec *spec);
 int zslLexValueLteMax(sds value, zlexrangespec *spec);
 
-/* Core functions */
+/* Core functions henrycore */
 int getMaxmemoryState(size_t *total, size_t *logical, size_t *tofree, float *level);
 size_t freeMemoryGetNotCountedMemory();
 int freeMemoryIfNeeded(void);

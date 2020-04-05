@@ -847,6 +847,20 @@ void _serverPanic(const char *file, int line, const char *msg, ...) {
     *((char*)-1) = 'x';
 }
 
+void _henryBugger(const char *file, int line, const char *msg, ...) {
+    va_list ap;
+    va_start(ap,msg);
+    char fmtmsg[256];
+    vsnprintf(fmtmsg,sizeof(fmtmsg),msg,ap);
+    va_end(ap);
+
+    bugReportStart();
+    serverLog(LL_WARNING,"------------------------------------------------");
+    serverLog(LL_WARNING,"%s #%s:%d",fmtmsg,file,line);
+    serverLog(LL_WARNING,"------------------------------------------------");
+    // *((char*)-1) = 'x';
+}
+
 void bugReportStart(void) {
     if (server.bug_report_start == 0) {
         serverLogRaw(LL_WARNING|LL_RAW,

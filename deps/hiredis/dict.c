@@ -103,6 +103,7 @@ static int dictExpand(dict *ht, unsigned long size) {
      * note that if the old hash table is empty ht->size is zero,
      * so dictExpand just creates an hash table. */
     n.used = ht->used;
+    /* Copy all the elements */
     for (i = 0; i < ht->size && ht->used > 0; i++) {
         dictEntry *he, *nextHe;
 

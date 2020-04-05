@@ -1020,7 +1020,7 @@ uint64_t hllCount(struct hllhdr *hdr, int *invalid) {
      * input: instead we history array at a safe size: overflows will
      * just write data to wrong, but correctly allocated, places. */
     int reghisto[64] = {0};
-
+    henryDebug("hllCount() henry love mj ");
     /* Compute register histogram */
     if (hdr->encoding == HLL_DENSE) {
         hllDenseRegHisto(hdr->registers,reghisto);
@@ -1328,7 +1328,8 @@ void pfmergeCommand(client *c) {
          * as target ASAP to save time and avoid the conversion step. */
         hdr = o->ptr;
         if (hdr->encoding == HLL_DENSE) use_dense = 1;
-
+        henryDebug("pfmergeCommand()");
+        serverLog(LL_DEBUG,"hdr: %s",o->ptr);
         /* Merge with this HLL with our 'max' HLL by setting max[i]
          * to MAX(max[i],hll[i]). */
         if (hllMerge(max,o) == C_ERR) {

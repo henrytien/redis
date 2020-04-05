@@ -725,7 +725,7 @@ double zzlGetScore(unsigned char *sptr) {
     long long vlong;
     char buf[128];
     double score;
-
+    
     serverAssert(sptr != NULL);
     serverAssert(ziplistGet(sptr,&vstr,&vlen,&vlong));
 
@@ -736,7 +736,9 @@ double zzlGetScore(unsigned char *sptr) {
     } else {
         score = vlong;
     }
-
+    const char* pbuf = buf;
+    serverLog(LL_DEBUG,"2.henry love mj zzlGetScore vstr:%s, buf:%s score %.2f.", vstr, pbuf,
+                                score);
     return score;
 }
 

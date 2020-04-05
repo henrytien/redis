@@ -242,8 +242,7 @@ int prepareClientToWrite(client *c) {
 
 int _addReplyToBuffer(client *c, const char *s, size_t len) {
     size_t available = sizeof(c->buf)-c->bufpos;
-
-    serverLog(LL_DEBUG,"henry love mj _addReplyToBuffer available %d.", available/1024);
+    
     if (c->flags & CLIENT_CLOSE_AFTER_REPLY) return C_OK;
 
     /* If there already are entries in the reply list, we cannot
@@ -302,7 +301,6 @@ void _addReplyProtoToList(client *c, const char *s, size_t len) {
 /* Add the object 'obj' string representation to the client output buffer. */
 void addReply(client *c, robj *obj) {
     if (prepareClientToWrite(c) != C_OK) return;
-
     if (sdsEncodedObject(obj)) {
         if (_addReplyToBuffer(c,obj->ptr,sdslen(obj->ptr)) != C_OK)
             _addReplyProtoToList(c,obj->ptr,sdslen(obj->ptr));
@@ -1326,7 +1324,8 @@ int handleClientsWithPendingWrites(void) {
         /* If a client is protected, don't do anything,
          * that may trigger write error or recreate handler. */
         if (c->flags & CLIENT_PROTECTED) continue;
-
+        // henryDebug("henry love mj handleClientsWithPendingWrites");
+        serverLog(LL_DEBUG, "3.handleClientsWithPendingWrites buf:%s ",c->buf);
         /* Try to write buffers to the client socket. */
         if (writeToClient(c,0) == C_ERR) continue;
 
@@ -1828,6 +1827,7 @@ void readQueryFromClient(connection *conn) {
     if (c->querybuf_peak < qblen) c->querybuf_peak = qblen;
     c->querybuf = sdsMakeRoomFor(c->querybuf, readlen);
     nread = connRead(c->conn, c->querybuf+qblen, readlen);
+    serverLog(LL_DEBUG, "Henry love mj 1.readQueryFromClient reading from client: %s",c->querybuf);
     if (nread == -1) {
         if (connGetState(conn) == CONN_STATE_CONNECTED) {
             return;

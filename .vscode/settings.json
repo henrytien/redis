@@ -48,6 +48,8 @@
         "tuple": "cpp",
         "unordered_map": "cpp",
         "vector": "cpp",
-        "ziplist.h": "c"
+        "ziplist.h": "c",
+        "dict.h": "c",
+        "intset.h": "c"
     }
 }
